@@ -1,0 +1,6 @@
+<a {{attrs}}
+    class="px-3 w-fit btn-square btn" 
+    hx-target="#{{target_id}}"
+    hx-push-url="true"
+    hx-get="{% querystring page=page_number %}" 
+    href="{% querystring page=page_number %}">{{slot}}</a>

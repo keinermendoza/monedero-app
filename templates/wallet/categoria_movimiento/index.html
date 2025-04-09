@@ -1,0 +1,37 @@
+{% comment %} 
+recibe context desde view:
+modal_detail_id: Este comoponente y <c-ui.movimientos.partial-table>
+modal_detail_container_id: Este comoponente y <c-ui.movimientos.partial-table>
+page_obj: <c-ui.movimientos.partial-table>
+movimientos: <c-ui.movimientos.partial-table>
+selected_category: <c-ui.movimientos.partial-table>
+{% endcomment %}
+
+<c-layouts.base>
+    <c-slot name="header">
+        <title>Monedero</title>
+    </c-slot>
+    <c-slot name="content">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-blue-950 my-4">Categorias de Gastos e Ingresos</h1>
+            <c-ui.modal id="modal_create" btn_text="Registrar">
+                <c-ui.form btn_text="Registrar" endpoint="{% url 'categoria_listar_registrar' %}" />
+            </c-ui.modal>
+        </div>
+
+        <dialog id="{{modal_detail_id}}" class="modal text-left">
+            <div id="{{modal_detail_container_id}}" class="modal-box">
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>Cerrar</button>
+            </form>
+        </dialog>
+
+        <c-ui.categorias.partial-table
+            :categorias="categorias"
+            :modal_detail_id="modal_detail_id"
+            :modal_detail_container_id="modal_detail_container_id"
+         />
+    </c-slot>
+</c-layouts.base>
+

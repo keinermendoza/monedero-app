@@ -1,0 +1,180 @@
+{% comment %} 
+recibe props
+movimientos: MovimientosQueryset: usado para mostrar data rows
+modal_detail_id: string: prop drilling hacia <c-ui.movimientos.td-showdetail> 
+modal_detail_container_id: prop drilling hacia <c-ui.movimientos.td-showdetail> 
+
+usa general context:
+page_obj: usado por <c-ui.pagination>
+
+estable variable:
+table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
+{% endcomment %}
+
+<c-vars table_id="movimientos_table" />
+
+<div id="{{table_id}}" class="overflow-x-auto">
+    
+    {% comment %} mostrando filtro cateogira / reseteo de filtro {% endcomment %}
+    
+    {% if selected_category or filtrando_por_fechas %} 
+    <div class="my-4 space-y-2 text-lg font-light italic">
+
+        <div>
+        {% if filtrando_por_fechas %}
+        <p class="">Filtrando por fechas, desde <b>{{request.GET.desde}}</b> hasta <b>{{request.GET.hasta}}</b></p>
+        {% endif %}
+
+        {% if selected_category %}
+        <p class="">Filtrando por categoria <b>{{selected_category}}</b></p>
+        {% endif %}
+        </div>
+
+        <c-ui.htmx-get-link
+            class="btn-link	text-blue-500 cursor-pointer"
+            endpoint="{% url 'movimiento_listar_registrar' %}"
+            target="#{{table_id}}">
+            Reiniciar filtros
+        </c-ui.htmx-get-link> 
+    </div>
+    {% endif %} 
+
+    {% comment %} conteo de filas {% endcomment %}
+    <div class="space-y-4 mt-4 text-lg font-medium italic">
+        <p class="text-blue-950">
+            <span class="text-xl font-bold">{{conteo}}</span> 
+            movimientos 
+        </p>
+        <p class="text-green-950">
+            <span class="text-3xl font-bold ">R$ {{ingresos}}</span> 
+            ingresos 
+        </p>
+        <p class="text-red-950">
+            <span class="text-3xl font-bold ">R$ {{gastos}}</span> 
+            gastos
+        </p>
+        <p class="text-blue-950">
+            <span class="text-3xl font-bold ">R$ {{ahorro}}</span> 
+            ahorro 
+        </p>
+    </div>
+
+    <div class="collapse bg-base-100 border-base-300 border w-fit my-4">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">Filtrar por fechas</div>
+        <div class="collapse-content text-sm">
+        <form
+                class="flex gap-2 items-end"
+                hx-get="{% url 'movimiento_listar_registrar' %}"
+                hx-replace-url="true"
+                hx-target="#{{table_id}}" 
+                hx-swap="outerHTML transition:true"
+                >
+                <c-ui.calendar
+                    trigger_id="desde_btn" 
+                    target_id="desde"
+                    name="desde"
+                    :old="request.GET.desde"  
+                />
+                <c-ui.calendar 
+                    trigger_id="hasta_btn" 
+                    target_id="hasta"
+                    name="hasta"
+                    :old="request.GET.hasta"    
+                />
+
+                {% if request.GET.categoria %}
+                <input type="hidden" name="categoria" value="{{request.GET.categoria}}" />
+                {% endif %}
+                <button class="btn btn-accent">Filtrar</button>
+            </form>
+        </div>
+    </div>
+
+
+    
+
+    <table class="text-sm lg:text-base table table-zebra">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th class="hidden lg:block">Descripcion</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for movimiento in movimientos %}
+            <tr>
+                <c-ui.td-showdetail 
+                    detail_template_id="movimiento-{{ movimiento.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{ forloop.counter }}
+                </c-ui.td-showdetail>
+
+                <c-ui.td-showdetail 
+                    detail_template_id="movimiento-{{ movimiento.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{movimiento.fecha|date:"d/m/Y"}}
+                </c-ui.td-showdetail>
+
+                <c-ui.td-showdetail 
+                    detail_template_id="movimiento-{{ movimiento.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{movimiento.monto}}
+                </c-ui.td-showdetail>
+
+                <c-ui.td-showdetail 
+                    detail_template_id="movimiento-{{ movimiento.id }}" 
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    class="hidden lg:table-cell">
+                    {{movimiento.descripcion|truncatechars:20}}
+                </c-ui.td-showdetail>
+
+                <td>
+                    <c-ui.htmx-get-link 
+                        endpoint="{% url 'movimiento_listar_registrar' %}?categoria={{movimiento.categoria.nombre}}"
+                        disabled="{% if selected_category == movimiento.categoria.nombre %}True{% endif %}"
+                        target="#{{table_id}}">
+                    {{movimiento.categoria}}    
+                    </c-ui.htmx-get-link>
+                </td>
+
+                <c-ui.movimientos.partial-template 
+                id="movimiento-{{ movimiento.id }}">
+    
+                <div class="flex justify-center items-center gap-2 mt-3">
+                    <c-ui.htmx-get-link 
+                        push="false"
+                        hx_swap="innerHTML transition:true"
+                        endpoint="{% url 'movimiento_editar_eliminar' movimiento.id %}"
+                        target="#{{modal_detail_container_id}}">
+                        Editar
+                    </c-ui.htmx-get-link> 
+
+                    <a 
+                        hx-confirm="Estas seguro que quieres eliminar éste movimiento? lugo no se podra revertir."
+                        hx-delete="{% url 'movimiento_editar_eliminar' movimiento.id %}"
+                        class="btn btn-error">Eliminar</a>
+                    </div>
+
+                </c-ui.movimientos.partial-template>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page_obj %}
+    <c-ui.pagination :target_id="table_id" :page_obj="page_obj" />
+    {% endif %}
+</div>
+

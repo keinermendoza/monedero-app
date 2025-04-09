@@ -1,0 +1,26 @@
+{% comment %} 
+attributes required
+:endpoint
+:target
+:disabled
+{% endcomment %}
+
+<c-vars 
+hx_swap="outerHTML transition:true"
+push="true"
+
+ />
+
+{% if disabled %}
+<button class="btn btn-disabled" disabled>{{slot}}</button>
+{% else %}
+<a
+class="{{class|default_if_none:'btn'}}"
+{% if push == 'true' %}
+hx-push-url="true"
+{% endif %}
+hx-swap="{{hx_swap}}" 
+hx-get="{{endpoint}}"
+hx-target="{{target}}"
+>{{slot}}</a>
+{% endif %}

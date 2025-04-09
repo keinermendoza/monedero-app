@@ -1,0 +1,96 @@
+{% comment %} 
+recibe props
+movimientos: MovimientosQueryset: usado para mostrar data rows
+modal_detail_id: string: prop drilling hacia <c-ui.movimientos.td-showdetail> 
+modal_detail_container_id: prop drilling hacia <c-ui.movimientos.td-showdetail> 
+
+usa general context:
+page_obj: usado por <c-ui.pagination>
+
+estable variable:
+table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
+{% endcomment %}
+
+<c-vars table_id="categorias_table" />
+
+<div id="{{table_id}}" class="overflow-x-auto">
+    
+    {% comment %} mostrando filtro cateogira / reseteo de filtro {% endcomment %}
+    {% if selected_category %} 
+    <div class="my-4 flex text-lg font-light italic gap-2 items-center">
+        <p class="">Filtrando por categoria <b>{{selected_category}}</b></p>
+        <c-ui.htmx-get-link
+            class="btn-link	text-blue-500"
+            endpoint="{% url 'movimiento_listar_registrar' %}"
+            target="#{{table_id}}">
+            Ver todas los resultados
+        </c-ui.htmx-get-link> 
+    </div>
+    {% endif %} 
+
+    <table class="mt-4 text-sm lg:text-base table table-zebra">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Nombre</th>
+                <th>Tipo de Movimiento</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for categoria in categorias %}
+            <tr>
+                <c-ui.td-showdetail 
+                    detail_template_id="categoria-{{ categoria.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{ forloop.counter }}
+                </c-ui.td-showdetail>
+
+                <c-ui.td-showdetail 
+                    detail_template_id="categoria-{{ categoria.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{categoria.nombre}}
+                </c-ui.td-showdetail>
+
+                <c-ui.td-showdetail 
+                    detail_template_id="categoria-{{ categoria.id }}"
+                    :modal_detail_id="modal_detail_id"
+                    :modal_detail_container_id="modal_detail_container_id"
+                    >
+                    {{categoria.get_tipo_movimiento_display}}
+
+                </c-ui.td-showdetail>
+
+                <c-ui.categorias.partial-template 
+                id="categoria-{{ categoria.id }}">
+    
+                    <div class="flex justify-center items-center gap-2 mt-3">
+                        <c-ui.htmx-get-link 
+                            push="false"
+                            hx_swap="innerHTML transition:true"
+                            endpoint="{% url 'categoria_editar_eliminar' categoria.id %}"
+                            target="#{{modal_detail_container_id}}">
+                            Editar
+                        </c-ui.htmx-get-link> 
+
+                        <a 
+                            hx-confirm="Estas seguro que quieres eliminar ésta categoria? lugo no se podra revertir."
+                            hx-delete="{% url 'categoria_editar_eliminar' categoria.id %}"
+                            class="btn btn-error">Eliminar</a>
+                    </div>
+
+                </c-ui.categorias.partial-template>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page_obj %}
+    <c-ui.pagination :target_id="table_id" :page_obj="page_obj" />
+    {% endif %}
+</div>
+

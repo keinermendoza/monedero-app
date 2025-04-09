@@ -1,0 +1,21 @@
+<c-vars method="post"/>
+
+<form 
+    {{attrs}} 
+    class="form"
+    method="{{method}}"
+{% if method == 'get' %}
+    hx-get="{{endpoint}}"
+{% elif method == 'post' %}
+    hx-post="{{endpoint}}"
+{% elif method == 'put' %}
+    hx-put="{{endpoint}}"
+{% elif method == 'delete' %}
+    hx-delete="{{endpoint}}"
+{% endif %}
+    >
+    {{ form }}
+    <button class="mt-4 btn btn-primary">{{btn_text|default_if_none:"Registrar"}}</button>
+</form>
+
+

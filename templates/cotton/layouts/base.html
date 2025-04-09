@@ -1,0 +1,25 @@
+{% load static django_vite %}
+<!DOCTYPE html>
+<html class="bg-gray-50" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% vite_hmr_client %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+    {% vite_asset 'src/main.js' %}
+    {{ header }}
+</head>
+<body
+    class="p-4 lg:p-8 mx-auto pb-0 max-w-6xl flex flex-col min-h-screen bg-slate-200 "
+    hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+        <div class="flex-grow">
+        <c-partials.messages />
+        {{ content }}
+        </div>
+        
+    <c-partials.nav />
+</body>
+</html>

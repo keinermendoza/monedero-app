@@ -1,0 +1,31 @@
+{% comment %} {% querystring page=page_obj.previous_page_number %} {% endcomment %}
+
+<div class="flex gap-2  my-4 justify-center">
+        {% if page_obj.has_previous %}
+        <c-ui.pagination-link :page_number="1" :target_id="target_id"  >
+            &laquo; primero
+        </c-ui.pagination-link> 
+
+        <c-ui.pagination-link :page_number="page_obj.previous_page_number" :target_id="target_id"  >
+            anterior
+        </c-ui.pagination-link> 
+
+        {% endif %}
+
+        <span class="px-3 w-fit btn btn-square btn-active">
+            Pagina  {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+
+         <c-ui.pagination-link :page_number="page_obj.next_page_number" :target_id="target_id"  >
+            próximo
+        </c-ui.pagination-link> 
+
+        <c-ui.pagination-link :page_number="page_obj.paginator.num_pages" :target_id="target_id"  >
+            último &raquo;
+        </c-ui.pagination-link> 
+
+        {% endif %}
+    
+</div>
