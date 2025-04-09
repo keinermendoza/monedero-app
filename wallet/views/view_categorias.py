@@ -9,13 +9,12 @@ from wallet.models import (
     CategoriaMovimiento
 )
 
-from django.contrib import messages 
 class CategoriaMovimientoForm(forms.ModelForm):
     class Meta: 
         model = CategoriaMovimiento
         fields = "__all__"
 
-class CategoriaMovimientoView(HtmxListFormView):
+class CategoriaMovimientoView(RequireSuperUser, HtmxListFormView):
     template_name = "wallet/categoria_movimiento/index.html"
     template_partial_name = "cotton/ui/categoria_movimiento/partial_table.html"
     template_form_partial_name = "cotton/ui/form.html"
@@ -33,8 +32,10 @@ class CategoriaMovimientoView(HtmxListFormView):
             "modal_detail_container_id":"movimiento_detail_modal_container",
         })
         return context
-    
-class CategoriaMovimientoEditDeleteView(HtmxEditUpdateDeleteView):
+
+from django.contrib import messages 
+
+class CategoriaMovimientoEditDeleteView(RequireSuperUser, HtmxEditUpdateDeleteView):
     template_name = "cotton/ui/form.html"
     form_class = CategoriaMovimientoForm
     success_url = reverse_lazy("categoria_listar_registrar")

@@ -12,21 +12,20 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^2*f(3**h-(nr-mcj4$bse!w0ha2d6o!kmkznz+%w0%6b5j08v'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = environ.get('SECRET_KEY')
+DEBUG = bool(int(environ.get('DEBUG', '0')))
+ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS').split(' ')
+CSRF_TRUSTED_ORIGINS =  environ.get('CSRF_TRUSTED_ORIGINS').split(' ')
 
 # Application definition
 
@@ -154,3 +153,10 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_ADAPTER = "wallet.adapter.NoSignupAccountAdapter"
 LOGIN_REDIRECT_URL = reverse_lazy("movimiento_listar_registrar")
+
+if DEBUG is False:
+    EMAIL_HOST = environ.get('EMAIL_HOST')
+    EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
+    EMAIL_PORT = int(environ.get('EMAIL_PORT'))
+    EMAIL_USE_TLS = bool(environ.get('EMAIL_USE_TLS'))

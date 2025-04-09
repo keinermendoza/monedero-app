@@ -64,19 +64,21 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
         <div class="collapse-title font-semibold">Filtrar por fechas</div>
         <div class="collapse-content text-sm">
         <form
-                class="flex gap-2 items-end"
+                class="flex flex-col  gap-2 lg:items-end lg:flex-row"
                 hx-get="{% url 'movimiento_listar_registrar' %}"
                 hx-replace-url="true"
                 hx-target="#{{table_id}}" 
                 hx-swap="outerHTML transition:true"
                 >
                 <c-ui.calendar
+                    class="w-full lg:w-40 "
                     trigger_id="desde_btn" 
                     target_id="desde"
                     name="desde"
                     :old="request.GET.desde"  
                 />
-                <c-ui.calendar 
+                <c-ui.calendar
+                    class="w-full lg:w-40 "
                     trigger_id="hasta_btn" 
                     target_id="hasta"
                     name="hasta"
@@ -154,6 +156,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
     
                 <div class="flex justify-center items-center gap-2 mt-3">
                     <c-ui.htmx-get-link 
+                        class="btn"
                         push="false"
                         hx_swap="innerHTML transition:true"
                         endpoint="{% url 'movimiento_editar_eliminar' movimiento.id %}"

@@ -1,10 +1,10 @@
 <template id="{{id}}">
   <article class="text-center space-y-2">
     <header>
-      <h3 class="text-lg">Categoria {{categoria.id}}</h3>
+      <h3 class="text-lg">Categoria {{categoria.nombre}}</h3>
     </header>
-    <p>{{categoria.nombre}}</p>
-    <div class="badge badge-outline badge-primary">{{categoria.get_tipo_movimineto_display}}</div> 
+    <p>Pertence al grupo:</p>
+    <div class="badge badge-outline badge-primary">{{categoria.get_tipo_movimiento_display}}</div> 
     <footer>
       {{slot}}
     </footer>

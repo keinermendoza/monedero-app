@@ -70,6 +70,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
     
                     <div class="flex justify-center items-center gap-2 mt-3">
                         <c-ui.htmx-get-link 
+                            class="btn"
                             push="false"
                             hx_swap="innerHTML transition:true"
                             endpoint="{% url 'categoria_editar_eliminar' categoria.id %}"

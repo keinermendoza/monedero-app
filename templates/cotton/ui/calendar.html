@@ -3,10 +3,11 @@ requierd props
 target_id
 trigger_id
 name 
+class
 {% endcomment %}
 <div>
 <p class="text-lg italic font-light">{{name}}</p>
-<button type="button" popovertarget="{{trigger_id}}-popover" class="input input-border w-40" id="{{trigger_id}}" style="anchor-name:--{{trigger_id}}">
+<button type="button" popovertarget="{{trigger_id}}-popover" class="input input-border {{class}}" id="{{trigger_id}}" style="anchor-name:--{{trigger_id}}">
   {% if old %}{{old}}{% else %}{{btn_text|default_if_none:'Seleccione una fecha'}}{% endif %}
 </button>
 
