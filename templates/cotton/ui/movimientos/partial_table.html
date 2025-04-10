@@ -37,6 +37,9 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
             Reiniciar filtros
         </c-ui.htmx-get-link> 
     </div>
+    {% else %}
+    {% now "F" as month %}
+    <p>Resultados para el presente mes de <b>{{month|title}}</b></p>
     {% endif %} 
 
     {% comment %} conteo de filas {% endcomment %}

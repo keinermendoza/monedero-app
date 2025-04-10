@@ -1,5 +1,5 @@
 from django import forms
-from decimal import Decimal, ROUND_HALF_UP
+from django.contrib import messages 
 from django.db.models import Sum
 from django.utils import timezone as tz
 from datetime import datetime
@@ -42,9 +42,12 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
     success_url = reverse_lazy("movimiento_listar_registrar")
     
     def save(self, form):
-        movimiento = form.save()
-        movimiento.registrado_por = self.request.user
-        movimiento.save()
+        try:
+            movimiento = form.save(commit=False)
+            movimiento.registrado_por = self.request.user
+            movimiento.save()
+        except:
+            print('error salvando')
         return movimiento
     
     def get_queryset(self):
@@ -92,7 +95,10 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
             "conteo": conteo 
         })
         return context
-    
+
+    def display_success_message(self):
+        messages.success(self.request, f"Movimiento {self.object} registrado con exito!")
+
 class MovimientosEditDeleteView(RequireSuperUser, HtmxEditUpdateDeleteView):
     template_name = "cotton/ui/form.html"
     form_class = MovimientoForm
@@ -107,5 +113,9 @@ class MovimientosEditDeleteView(RequireSuperUser, HtmxEditUpdateDeleteView):
     
     def get_retry_url(self):
         return reverse_lazy("movimiento_editar_eliminar", args=[self.kwargs['pk']])
+    
+    def display_success_delete_message(self):
+        messages.success(self.request, f"Movimiento {self.object} eliminado con exito")
 
-  
+    def display_success_message(self):
+        messages.success(self.request, f"Movimiento {self.object} actualizado con exito!")

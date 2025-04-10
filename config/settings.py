@@ -138,7 +138,7 @@ STATIC_ROOT = "static/" # for collect static
 
 DJANGO_VITE = {
   "default": {
-    "dev_mode": DEBUG
+    "dev_mode": False
   }
 }
 

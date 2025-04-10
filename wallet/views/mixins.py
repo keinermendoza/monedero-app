@@ -12,7 +12,6 @@ class RequireSuperUser(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser
     
-
 class HtmxFormMixing(FormMixin):
     """
     Mixing for handeling htmx form processing
@@ -29,22 +28,27 @@ class HtmxFormMixing(FormMixin):
     """
     template_form_partial_name = None
 
-    def get_context_data(self, **kwargs):
+    def call_if_exists(self, method_name):
+        method = getattr(self, method_name, None)
+        if method is not None and callable(method):
+            return method()
+
+    def get_context_form_data(self, **kwargs):
         """Renamed for avoiding collitions 
         Insert the form into the context dict."""
         if "form" not in kwargs:
             kwargs["form"] = self.get_form()
+            kwargs["endpoint"] = self.get_retry_url()
 
         kwargs.setdefault("view", self)
         if self.extra_context is not None:
             kwargs.update(self.extra_context)
         return kwargs
 
-    def form_invalid(self, form):
+    def form_invalid(self, form, **kwrags):
         """If the form is invalid, render the invalid form."""
-        self.diaplay_error_message(form)
-        return self.render_to_response(
-            self.get_context_data(form=form, endpoint=self.get_retry_url()))
+        self.call_if_exists("display_error_message")
+        return self.render_to_response(self.get_context_form_data(**kwrags))
     
     def save(self, form):
         """
@@ -56,7 +60,7 @@ class HtmxFormMixing(FormMixin):
 
     def form_valid(self, form):
         self.object = self.save(form)
-        self.diaplay_success_message()
+        self.call_if_exists("display_success_message")
         return HttpResponseClientRedirect(self.get_success_url())
     
     def get_retry_url(self):
@@ -64,15 +68,12 @@ class HtmxFormMixing(FormMixin):
             return self.retry_url
         raise NotImplementedError('for use HtmxViewMixing you must to provide a retry_url property or implement get_retry_url method')
 
-    def diaplay_error_message(self, form):
-        return None
-    
-    def diaplay_success_message(self):
-        return None
-
         
 class HtmxEditUpdateDeleteView(View, TemplateResponseMixin, HtmxFormMixing, SingleObjectMixin):
     template_name = None
+    extra_context = {
+        "btn_text":"Guardar Cámbios"
+    }
 
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
@@ -85,10 +86,8 @@ class HtmxEditUpdateDeleteView(View, TemplateResponseMixin, HtmxFormMixing, Sing
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
-            "endpoint": self.get_retry_url(),
-            "btn_text": "Guardar cámbios"
-        })
+        context_form = self.get_context_form_data()
+        context.update(**context_form)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -112,20 +111,15 @@ class HtmxEditUpdateDeleteView(View, TemplateResponseMixin, HtmxFormMixing, Sing
         success_url = self.get_success_url()
         try:
             self.object.delete()
-            self.display_success_delete_message()
+            self.call_if_exists("display_success_delete_message")
         except Exception as e:
-            self.display_error_delete_message()
-            return HttpResponseClientRedirect(success_url)  
+            self.call_if_exists("display_error_delete_message")
+            
+        return HttpResponseClientRedirect(success_url)  
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return self.render_to_response(self.get_context_data())
-
-    def display_success_delete_message(self):
-        return None
-
-    def display_error_delete_message(self):
-        return None
    
 class HtmxListFormView(ListView, HtmxFormMixing):
     """
@@ -136,7 +130,10 @@ class HtmxListFormView(ListView, HtmxFormMixing):
     template_name = None
     template_partial_name = None
     template_form_partial_name = None
-    
+    extra_context = {
+        "btn_text":"Registrar"
+    }
+
     def get_template_names(self) -> list[str]:
         if self.request.method == "POST":
             return [self.template_form_partial_name]
@@ -154,3 +151,9 @@ class HtmxListFormView(ListView, HtmxFormMixing):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context_form = self.get_context_form_data()
+        context.update(**context_form)
+        return context

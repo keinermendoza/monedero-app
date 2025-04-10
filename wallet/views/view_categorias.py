@@ -1,3 +1,4 @@
+from django.contrib import messages 
 from django import forms
 from django.urls import reverse_lazy
 from .mixins import (
@@ -32,8 +33,9 @@ class CategoriaMovimientoView(RequireSuperUser, HtmxListFormView):
             "modal_detail_container_id":"movimiento_detail_modal_container",
         })
         return context
-
-from django.contrib import messages 
+    
+    def display_success_message(self):
+        messages.success(self.request, f"Categoria {self.object} registrada con exito!")
 
 class CategoriaMovimientoEditDeleteView(RequireSuperUser, HtmxEditUpdateDeleteView):
     template_name = "cotton/ui/form.html"

@@ -50,7 +50,7 @@ class Movimiento(Timestamp):
 
 
     def __str__(self):
-        return f"{self.monto} {self.descripcion}" 
+        return f"{self.descripcion}" 
 
     class Meta:
         ordering = ["-fecha"]
