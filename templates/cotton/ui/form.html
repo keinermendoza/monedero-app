@@ -8,6 +8,7 @@
     hx-get="{{endpoint}}"
 {% elif method == 'post' %}
     hx-post="{{endpoint}}"
+    hx-include="#current_query_params"
 {% elif method == 'put' %}
     hx-put="{{endpoint}}"
 {% elif method == 'delete' %}

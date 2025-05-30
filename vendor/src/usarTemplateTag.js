@@ -1,5 +1,8 @@
 import htmx from 'htmx.org';
-
+/* 
+permite pasar el contenido de un template tag a un elemnto target por medio de sus ids
+usada como inline function por 'cotton/ui/td_showdetail.html'
+*/
 export default function usarTemplateTag(templateId, modalId, slotId) {
   const template = document.getElementById(templateId);
   const modal = document.getElementById(modalId);

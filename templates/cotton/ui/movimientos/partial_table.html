@@ -14,9 +14,12 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
 <c-vars table_id="movimientos_table" />
 
 <div id="{{table_id}}" class="overflow-x-auto">
+
+    {% comment %} esto es incluido en ui/form en post methods para mantener los filtros     {% endcomment %}
+    <input type="hidden" name="current_query_params" id="current_query_params" value="{% querystring %}"  />
+
     
     {% comment %} mostrando filtro cateogira / reseteo de filtro {% endcomment %}
-    
     {% if selected_category or filtrando_por_fechas %} 
     <div class="my-4 space-y-2 text-lg font-light italic">
 
@@ -73,6 +76,16 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
                 hx-target="#{{table_id}}" 
                 hx-swap="outerHTML transition:true"
                 >
+                <c-ui.date-input
+                    name="desde"
+                    :old="request.GET.desde"
+                />
+
+                <c-ui.date-input
+                    name="hasta"
+                    :old="request.GET.hasta"
+                />
+{% comment %}                 
                 <c-ui.calendar
                     class="w-full lg:w-40 "
                     trigger_id="desde_btn" 
@@ -86,7 +99,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
                     target_id="hasta"
                     name="hasta"
                     :old="request.GET.hasta"    
-                />
+                /> {% endcomment %}
 
                 {% if request.GET.categoria %}
                 <input type="hidden" name="categoria" value="{{request.GET.categoria}}" />

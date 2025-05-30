@@ -41,6 +41,15 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
     retry_url = reverse_lazy("movimiento_listar_registrar")
     success_url = reverse_lazy("movimiento_listar_registrar")
     
+    def get_success_url(self):
+        """
+        keeps the filters used in query params when creating new records
+        """
+        url = super().get_success_url()
+        if self.request.method == "POST":
+            url += self.request.POST.get("current_query_params", "")
+        return url
+    
     def save(self, form):
         try:
             movimiento = form.save(commit=False)

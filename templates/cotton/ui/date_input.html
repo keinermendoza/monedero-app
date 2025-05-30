@@ -1,0 +1,8 @@
+<c-vars old="" />
+
+<div class="custom-datetime">
+    <label>
+        <p class="text-lg italic font-light">{{name}}</p>
+        <input type="date" {{attrs}} {% if old %}value="{{old}}"{% endif %}  />
+    </label>
+</div>
