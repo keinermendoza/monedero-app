@@ -20,7 +20,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
 
     
     {% comment %} mostrando filtro cateogira / reseteo de filtro {% endcomment %}
-    {% if selected_category or filtrando_por_fechas %} 
+    {% if categorias_seleccionadas or filtrando_por_fechas %} 
     <div class="my-4 space-y-2 text-lg font-light italic">
 
         <div>
@@ -28,8 +28,12 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
         <p class="">Filtrando por fechas, desde <b>{{request.GET.desde}}</b> hasta <b>{{request.GET.hasta}}</b></p>
         {% endif %}
 
-        {% if selected_category %}
-        <p class="">Filtrando por categoria <b>{{selected_category}}</b></p>
+        {% if categorias_seleccionadas %}
+        <p class="">Filtrando por categoria 
+        {% for categoria_seleccionada in categorias_seleccionadas  %}
+            <b>{{categoria_seleccionada}} </b>
+        {% endfor %}
+        </p>
         {% endif %}
         </div>
 
