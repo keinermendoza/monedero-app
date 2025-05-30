@@ -71,9 +71,10 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
         else:
             queryset = queryset.filter(fecha__year=now.year, fecha__month=now.month)
             self.filtrando_por_fechas = None
-        
-        if categoria := self.request.GET.get("categoria"):
-            return queryset.filter(categoria__nombre=categoria) 
+
+        if categorias_ids := self.request.GET.getlist('categorias'): 
+            queryset = queryset.filter(categoria__id__in=categorias_ids)
+
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -91,16 +92,16 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
         )        
         ahorro = ingresos - gastos        
         conteo = queryset.count()
-
+        
         context.update({
-            "selected_category": self.request.GET.get("categoria"),
+            "categorias_seleccionadas" : list(map(int,self.request.GET.getlist("categorias"))),
+            "categorias" : CategoriaMovimiento.objects.all(),
             "modal_detail_id":"movimiento_detail",
             "modal_detail_container_id":"movimiento_detail_modal_container",
             "filtrando_por_fechas" : self.filtrando_por_fechas,
             "gastos": gastos,
             "ingresos": ingresos,
             "ahorro": ahorro,
-
             "conteo": conteo 
         })
         return context
