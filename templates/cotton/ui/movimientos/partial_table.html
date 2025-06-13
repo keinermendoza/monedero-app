@@ -29,9 +29,17 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
         {% endif %}
 
         {% if categorias_seleccionadas %}
-        <p class="">Filtrando por categoria 
+        <p class="">Filtrando por categoria{{categorias_seleccionadas.count|pluralize}} 
         {% for categoria_seleccionada in categorias_seleccionadas  %}
-            <b>{{categoria_seleccionada}} </b>
+    
+            {% if categorias_seleccionadas.count > 1 %}
+                {% if forloop.last %}<b>y</b>{% endif %}
+            {% endif %}
+
+            {% if not forloop.last and not forloop.first %}<b>,</b>{% endif %}
+
+            <b>{{categoria_seleccionada}}</b>
+            
         {% endfor %}
         </p>
         {% endif %}
@@ -46,14 +54,14 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
     </div>
     {% else %}
     {% now "F" as month %}
-    <p>Resultados para el presente mes de <b>{{month|title}}</b></p>
+    <p class="mt-4">Resultados para el presente mes de <b>{{month|title}}</b></p>
     {% endif %} 
 
     {% comment %} conteo de filas {% endcomment %}
     <div class="space-y-4 mt-4 text-lg font-medium italic">
         <p class="text-blue-950">
             <span class="text-xl font-bold">{{conteo}}</span> 
-            movimientos 
+            movimiento{{conteo|pluralize}}
         </p>
         <p class="text-green-950">
             <span class="text-3xl font-bold ">R$ {{ingresos}}</span> 
@@ -107,7 +115,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
                             <input type="checkbox"
                                 name="categorias"
                                 value="{{ categoria.id }}"
-                                {% if categoria.id in categorias_seleccionadas %}checked{% endif %} />
+                                {% if categoria in categorias_seleccionadas %}checked{% endif %} />
                             <span class="text-lg">
                                 {{ categoria.nombre }}
                             </span>
@@ -199,7 +207,7 @@ table_id: usado por este componente, <c-ui.htmx-get-link> y <c-ui.pagination>
 
                     <a 
                         hx-confirm="Estas seguro que quieres eliminar éste movimiento? lugo no se podra revertir."
-                        hx-delete="{% url 'movimiento_editar_eliminar' movimiento.id %}"
+                        hx-delete="{% url 'movimiento_editar_eliminar' movimiento.id %}?{% querystring %}"
                         class="btn btn-error">Eliminar</a>
                     </div>
 

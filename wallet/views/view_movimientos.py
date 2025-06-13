@@ -64,6 +64,7 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
         now = tz.now()
         desde = self.request.GET.get("desde")
         hasta = self.request.GET.get("hasta")
+        self.categorias_seleccionadas = []
 
         if all([fecha_valida(desde), fecha_valida(hasta)]):
             queryset = queryset.filter(fecha__gte=desde, fecha__lte=hasta)
@@ -73,8 +74,8 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
             self.filtrando_por_fechas = None
 
         if categorias_ids := self.request.GET.getlist('categorias'): 
-            queryset = queryset.filter(categoria__id__in=categorias_ids)
-
+            self.categorias_seleccionadas = CategoriaMovimiento.objects.filter( id__in=list(map(int, categorias_ids)) ) 
+            queryset = queryset.filter(categoria__in=self.categorias_seleccionadas)
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -94,7 +95,7 @@ class MovimientosView(RequireSuperUser, HtmxListFormView):
         conteo = queryset.count()
         
         context.update({
-            "categorias_seleccionadas" : list(map(int,self.request.GET.getlist("categorias"))),
+            "categorias_seleccionadas" : self.categorias_seleccionadas,
             "categorias" : CategoriaMovimiento.objects.all(),
             "modal_detail_id":"movimiento_detail",
             "modal_detail_container_id":"movimiento_detail_modal_container",
@@ -114,6 +115,19 @@ class MovimientosEditDeleteView(RequireSuperUser, HtmxEditUpdateDeleteView):
     form_class = MovimientoForm
     success_url = reverse_lazy("movimiento_listar_registrar")
     queryset = Movimiento.objects.all()
+
+    def get_success_url(self):
+        """
+        keeps the filters used in query params when creating new records
+        """
+        url = super().get_success_url()
+        if self.request.method == "POST":
+            url += self.request.POST.get("current_query_params", "")
+        else:
+            if query_string := self.request.META.get('QUERY_STRING', ''):
+               url += query_string
+        return url
+    
 
     def save(self, form):
         movimiento = form.save()
